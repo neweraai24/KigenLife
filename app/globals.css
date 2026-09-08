@@ -1,26 +1,76 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Base palette — moss structure */
+  --color-kg-moss-900: #27351f; /* Rêu Thẫm — structural, footer, dark sections, headings */
+  --color-kg-moss-700: #4a5a2e; /* Rêu Lá — primary action, links, active tab */
+  --color-kg-sage-500: #7e8c5a; /* Cỏ Nhạt — secondary text, hairlines, small icons */
+  --color-kg-brass-600: #9b8b4f; /* Đồng Thau — 1px rules, cert frames, price */
+  --color-kg-gold-500: #c2a552; /* Vàng Sâm — cert badges, age marks, hover only */
+  --color-kg-ivory-50: #fbfcf9; /* Ngà Sáng — page ground */
+  --color-kg-white: #ffffff;
+
+  /* Semantic status */
+  --color-kg-alert-600: #a33b2a;
+  --color-kg-confirm-600: #2e6b4f;
+
+  /* Type */
+  --font-display: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-be-vietnam), "Segoe UI", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Signature ring */
+  --ring-tick-length: 6px;
+  --ring-tick-width: 2px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-kg-ivory-50 text-kg-moss-900 font-body text-[17px] leading-[1.65] antialiased;
+    text-wrap: pretty;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-semibold text-kg-moss-900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  a {
+    @apply transition-colors duration-150;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-kg-moss-700);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .kg-eyebrow {
+    @apply font-mono text-[15px] uppercase text-kg-brass-600;
+    letter-spacing: 0.14em;
+  }
+  .kg-measure {
+    max-width: 68ch;
+  }
+  .kg-tick-divider {
+    height: 6px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-kg-gold-500) 0 2px,
+      transparent 2px 12px
+    );
+  }
+  .kg-tick-divider-dark {
+    height: 6px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--color-kg-gold-500) 0 2px,
+      transparent 2px 12px
+    );
+  }
+  .kg-scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
