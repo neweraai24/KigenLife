@@ -8,9 +8,8 @@ import Textarea from "@/components/forms/Textarea";
 import Switch from "@/components/forms/Switch";
 import Button from "@/components/ui/Button";
 import Alert from "@/components/ui/Alert";
-import { PRODUCTS } from "@/lib/products";
 
-export default function OriginContactForm() {
+export default function OriginContactForm({ products = [] }) {
   const [sent, setSent] = useState(false);
   const [news, setNews] = useState(false);
 
@@ -37,7 +36,7 @@ export default function OriginContactForm() {
         <Input id="o-tel" inputMode="tel" placeholder="09xx xxx xxx" required />
       </Field>
       <Field label="Sản phẩm quan tâm" htmlFor="o-sku" className="md:col-span-2">
-        <Select id="o-sku" options={PRODUCTS.slice(0, 8).map((p) => ({ value: p.sku, label: `${p.sku} — ${p.name}` }))} />
+        <Select id="o-sku" options={products.slice(0, 8).map((p) => ({ value: p.sku, label: `${p.sku} — ${p.name}` }))} />
       </Field>
       <Field label="Câu hỏi" htmlFor="o-msg" className="md:col-span-2">
         <Textarea id="o-msg" rows={4} placeholder="Quý khách cần KIGEN xác nhận điều gì?" />

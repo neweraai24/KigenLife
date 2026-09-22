@@ -1,35 +1,42 @@
-// Static site config that rarely changes — company info and product-line
-// labels. Actual product data (name, price, stock, images) is managed in
-// Sanity Studio at /studio — see lib/sanity/queries.js.
+// One-time import of the starter catalogue into Sanity.
+// Usage:  node scripts/seed-sanity.mjs
+// Requires .env.local with NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET
+// and SANITY_API_TOKEN (an Editor-permission token from manage.sanity.io).
+//
+// Safe to re-run: products already present (matched by SKU) are skipped.
 
-export const COMPANY = {
-  name: "CÔNG TY TNHH KIGEN LIFE SCIENCES",
-  address: "Số 52 Đường Phan Bội Châu, Phường Nha Trang, Tỉnh Khánh Hòa, Việt Nam",
-  taxId: "4202060584",
-  hotline: "0866228685",
-  hotlineDisplay: "0866 228 685",
-};
+import { config as loadEnv } from "dotenv";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createClient } from "@sanity/client";
 
-export const LINES = [
-  { id: "all", label: "Tất cả sản phẩm" },
-  { id: "cu", label: "Củ nguyên" },
-  { id: "lat", label: "Sâm lát" },
-  { id: "bot", label: "Bột sâm" },
-  { id: "che", label: "Chế biến" },
-];
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const projectRoot = path.join(__dirname, "..");
 
-export const LINE_LABELS = {
-  cu: "Củ nguyên",
-  lat: "Sâm lát",
-  bot: "Bột sâm",
-  che: "Chế biến",
-};
+loadEnv({ path: path.join(projectRoot, ".env.local") });
 
-// Seed dataset for scripts/seed-sanity.js — the one-time import into Sanity.
-// PRICES ARE PLACEHOLDERS — replace with the real price list before public use.
-// `img` points at the packshot in public/images/products/ that the seed
-// script uploads as each product's Sanity image asset.
-export const SEED_PRODUCTS = [
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
+const token = process.env.SANITY_API_TOKEN;
+
+if (!projectId || !token) {
+  console.error(
+    "Thiếu NEXT_PUBLIC_SANITY_PROJECT_ID hoặc SANITY_API_TOKEN trong .env.local — xem HUONG-DAN-SANITY.md."
+  );
+  process.exit(1);
+}
+
+const client = createClient({
+  projectId,
+  dataset,
+  apiVersion: "2026-01-01",
+  token,
+  useCdn: false,
+});
+
+// Seed dataset — PRICES ARE PLACEHOLDERS, replace with the real price list.
+const SEED_PRODUCTS = [
   { sku: "HD01", name: "Củ nguyên hộp da", line: "cu", weight: "1 kg", age: 5, price: 9850000, unit: "hộp", img: "p01-HD01", note: "Hộp da, củ nguyên chọn tay." },
   { sku: "GB49", name: "Hộp quà củ đại 49", line: "cu", weight: "227 g", age: 5, price: 4250000, unit: "hộp", img: "p02-GB49", note: "Khoảng 14–16 củ mỗi hộp." },
   { sku: "GB59", name: "Hộp quà củ đại 59", line: "cu", weight: "227 g", age: 5, price: 4650000, unit: "hộp", img: "p03-GB59", note: "Khoảng 12–14 củ mỗi hộp." },
@@ -57,10 +64,47 @@ export const SEED_PRODUCTS = [
   { sku: "NST60", name: "Trà nhân sâm 60 gói", line: "che", weight: "60 × 3 g", price: 520000, unit: "hộp", img: "p25-NST60", note: "Túi lọc, 60 gói." },
 ];
 
-export function productImage(img) {
-  return `/images/products/${img}.png`;
+async function seed() {
+  console.log(`Đang nạp ${SEED_PRODUCTS.length} sản phẩm vào dataset "${dataset}"...\n`);
+  let created = 0;
+  let skipped = 0;
+
+  for (const p of SEED_PRODUCTS) {
+    const existing = await client.fetch(`*[_type == "product" && sku.current == $sku][0]._id`, { sku: p.sku });
+    if (existing) {
+      console.log(`- ${p.sku} đã tồn tại, bỏ qua.`);
+      skipped++;
+      continue;
+    }
+
+    const imagePath = path.join(projectRoot, "public", "images", "products", `${p.img}.png`);
+    const imageBuffer = await readFile(imagePath);
+    const asset = await client.assets.upload("image", imageBuffer, { filename: `${p.img}.png` });
+
+    await client.create({
+      _type: "product",
+      name: p.name,
+      sku: { _type: "slug", current: p.sku },
+      line: p.line,
+      price: p.price,
+      unit: p.unit,
+      weight: p.weight,
+      age: p.age,
+      note: p.note,
+      inStock: p.inStock !== false,
+      featured: Boolean(p.featured),
+      image: { _type: "image", asset: { _type: "reference", _ref: asset._id } },
+    });
+
+    console.log(`+ Đã tạo ${p.sku} — ${p.name}`);
+    created++;
+  }
+
+  console.log(`\nHoàn tất: ${created} sản phẩm mới, ${skipped} đã có sẵn.`);
+  console.log("Mở /studio trên website để xem và chỉnh sửa.");
 }
 
-export function formatVnd(value) {
-  return new Intl.NumberFormat("vi-VN").format(value) + " ₫";
-}
+seed().catch((err) => {
+  console.error("Có lỗi khi nạp dữ liệu:", err.message);
+  process.exit(1);
+});

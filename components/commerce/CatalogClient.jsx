@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Tag from "@/components/ui/Tag";
 import Checkbox from "@/components/forms/Checkbox";
@@ -8,9 +9,9 @@ import Select from "@/components/forms/Select";
 import Field from "@/components/forms/Field";
 import ComplianceNotice from "@/components/ui/ComplianceNotice";
 import ProductCard from "@/components/commerce/ProductCard";
-import { LINES, PRODUCTS } from "@/lib/products";
+import { LINES } from "@/lib/products";
 
-export default function CatalogClient() {
+export default function CatalogClient({ products }) {
   const searchParams = useSearchParams();
   const initialLine = searchParams.get("line") || "all";
 
@@ -19,13 +20,13 @@ export default function CatalogClient() {
   const [giftOnly, setGiftOnly] = useState(false);
 
   const items = useMemo(() => {
-    let list = line === "all" ? PRODUCTS : PRODUCTS.filter((p) => p.line === line);
+    let list = line === "all" ? products : products.filter((p) => p.line === line);
     if (giftOnly) list = list.filter((p) => /Hộp quà|hộp da/.test(p.name));
     list = [...list].sort((a, b) =>
       sort === "price" ? a.price - b.price : (b.age || 0) - (a.age || 0)
     );
     return list;
-  }, [line, sort, giftOnly]);
+  }, [line, sort, giftOnly, products]);
 
   return (
     <>
@@ -33,7 +34,7 @@ export default function CatalogClient() {
         <div>
           <h1 className="m-0 text-[34px] md:text-[40px]">Danh mục sản phẩm</h1>
           <p className="mt-3 max-w-[62ch] text-[17px] text-kg-moss-900">
-            25 mã đang có hàng tại kho Nha Trang. Mã, khối lượng tịnh và năm thu hoạch ghi theo bao bì gốc.
+            {products.length} mã đang có hàng tại kho Nha Trang. Mã, khối lượng tịnh và năm thu hoạch ghi theo bao bì gốc.
           </p>
         </div>
         <Field label="Sắp xếp" htmlFor="sort" className="w-[220px]">
@@ -65,11 +66,21 @@ export default function CatalogClient() {
         <span className="ml-auto font-mono text-[15px] text-kg-sage-500">{items.length} mã</span>
       </div>
 
-      <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-        {items.map((p) => (
-          <ProductCard key={p.sku} product={p} />
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <p className="mb-10 rounded border border-kg-sage-500/25 bg-kg-white p-8 text-[16px] text-kg-sage-500">
+          Chưa có sản phẩm nào. Thêm sản phẩm tại trang quản trị{" "}
+          <Link href="/studio" className="text-kg-moss-700 underline">
+            /studio
+          </Link>
+          .
+        </p>
+      ) : (
+        <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+          {items.map((p) => (
+            <ProductCard key={p.sku} product={p} />
+          ))}
+        </div>
+      )}
 
       <ComplianceNotice />
     </>

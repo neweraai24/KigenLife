@@ -18,7 +18,7 @@ import SpecTable from "@/components/commerce/SpecTable";
 import OriginTimeline from "@/components/commerce/OriginTimeline";
 import ProductCard from "@/components/commerce/ProductCard";
 import { useCart } from "@/lib/cart-context";
-import { COMPANY, productImage } from "@/lib/products";
+import { COMPANY } from "@/lib/products";
 
 const TABS = [
   { value: "info", label: "Thông số" },
@@ -27,13 +27,15 @@ const TABS = [
   { value: "ship", label: "Vận chuyển" },
 ];
 
-export default function ProductDetailClient({ product, related, thumbSkus }) {
+export default function ProductDetailClient({ product, related, thumbImages }) {
   const { add } = useCart();
   const [tab, setTab] = useState("info");
   const [qty, setQty] = useState(1);
   const [certOpen, setCertOpen] = useState(false);
-  const [activeThumb, setActiveThumb] = useState(product.img);
+  const [activeImage, setActiveImage] = useState(product.imageUrl);
   const [added, setAdded] = useState(false);
+
+  const gallery = [product.imageUrl, ...thumbImages].filter(Boolean);
 
   const inStock = product.inStock !== false;
 
@@ -72,27 +74,31 @@ export default function ProductDetailClient({ product, related, thumbSkus }) {
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-14">
         <div>
           <div className="relative aspect-square w-full border border-kg-sage-500/25 bg-kg-moss-900/[0.04]">
-            <Image src={productImage(activeThumb)} alt={product.name} fill sizes="(min-width:1024px) 45vw, 100vw" className="object-contain" />
+            {activeImage && (
+              <Image src={activeImage} alt={product.name} fill sizes="(min-width:1024px) 45vw, 100vw" className="object-contain" />
+            )}
             {product.age != null && (
               <span className="absolute right-4 top-4 rounded-full bg-kg-white">
                 <GinsengRing age={product.age} size={56} />
               </span>
             )}
           </div>
-          <div className="mt-3 flex gap-3">
-            {[product.img, ...thumbSkus].map((t, i) => (
-              <button
-                key={t + i}
-                type="button"
-                onClick={() => setActiveThumb(t)}
-                className={`relative h-[92px] w-[92px] border bg-kg-moss-900/[0.04] ${
-                  activeThumb === t ? "border-kg-brass-600" : "border-kg-sage-500/25"
-                }`}
-              >
-                <Image src={productImage(t)} alt="" fill sizes="92px" className="object-contain" />
-              </button>
-            ))}
-          </div>
+          {gallery.length > 1 && (
+            <div className="mt-3 flex gap-3">
+              {gallery.map((src, i) => (
+                <button
+                  key={src + i}
+                  type="button"
+                  onClick={() => setActiveImage(src)}
+                  className={`relative h-[92px] w-[92px] border bg-kg-moss-900/[0.04] ${
+                    activeImage === src ? "border-kg-brass-600" : "border-kg-sage-500/25"
+                  }`}
+                >
+                  <Image src={src} alt="" fill sizes="92px" className="object-contain" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>

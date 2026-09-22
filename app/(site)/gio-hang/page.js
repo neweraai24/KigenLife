@@ -10,10 +10,10 @@ import Price from "@/components/ui/Price";
 import ComplianceNotice from "@/components/ui/ComplianceNotice";
 import QuantityStepper from "@/components/forms/QuantityStepper";
 import { useCart } from "@/lib/cart-context";
-import { formatVnd, productImage } from "@/lib/products";
+import { formatVnd } from "@/lib/products";
 
 export default function CartPage() {
-  const { lines, subtotal, setQty, remove, loaded } = useCart();
+  const { lines, subtotal, setQty, remove, loaded, resolving } = useCart();
   const shipping = subtotal >= 2000000 || subtotal === 0 ? 0 : 45000;
 
   return (
@@ -21,11 +21,11 @@ export default function CartPage() {
       <Breadcrumb items={[{ label: "Trang chủ", href: "/" }, { label: "Giỏ hàng" }]} className="mb-5" />
       <h1 className="mb-10 text-[34px] md:text-[40px]">Giỏ hàng</h1>
 
-      {!loaded ? null : lines.length === 0 ? (
+      {!loaded || resolving ? null : lines.length === 0 ? (
         <Card tone="inset" className="p-10">
           <p className="mb-5 text-[17px]">Giỏ hàng chưa có sản phẩm nào.</p>
           <Button href="/cua-hang" variant="primary">
-            Xem 25 sản phẩm
+            Xem sản phẩm
           </Button>
         </Card>
       ) : (
@@ -52,7 +52,9 @@ export default function CartPage() {
                     <td className="py-5">
                       <div className="flex items-center gap-4">
                         <div className="relative h-[88px] w-[88px] shrink-0 border border-kg-sage-500/25 bg-kg-moss-900/[0.04]">
-                          <Image src={productImage(item.img)} alt="" fill sizes="88px" className="object-contain" />
+                          {item.imageUrl && (
+                            <Image src={item.imageUrl} alt="" fill sizes="88px" className="object-contain" />
+                          )}
                         </div>
                         <div className="flex flex-col gap-1">
                           <span className="font-display text-[24px] font-semibold leading-[1.15] text-kg-moss-900">

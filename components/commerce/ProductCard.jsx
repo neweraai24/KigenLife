@@ -4,17 +4,18 @@ import Badge from "@/components/ui/Badge";
 import Price from "@/components/ui/Price";
 import GinsengRing from "@/components/ui/GinsengRing";
 import AddToCartButton from "@/components/commerce/AddToCartButton";
-import { productImage } from "@/lib/products";
 
 export default function ProductCard({ product }) {
-  const { sku, name, weight, age, price, unit, note, img, inStock = true } = product;
+  const { sku, name, weight, age, price, unit, note, imageUrl, inStock = true } = product;
   const href = `/san-pham/${sku}`;
 
   return (
     <article className="flex flex-col rounded border border-kg-sage-500/25 bg-kg-white transition-colors duration-150 hover:border-kg-brass-600">
       <Link href={href} className="relative block bg-kg-moss-900/[0.04] no-underline">
         <div className="relative aspect-square w-full">
-          <Image src={productImage(img)} alt={name} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-contain" />
+          {imageUrl && (
+            <Image src={imageUrl} alt={name} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-contain" />
+          )}
         </div>
         {age != null && (
           <span className="absolute right-3 top-3 rounded-full bg-kg-white">

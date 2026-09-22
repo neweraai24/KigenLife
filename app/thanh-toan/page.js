@@ -15,12 +15,12 @@ import Textarea from "@/components/forms/Textarea";
 import Radio from "@/components/forms/Radio";
 import Checkbox from "@/components/forms/Checkbox";
 import { useCart } from "@/lib/cart-context";
-import { COMPANY, formatVnd, productImage } from "@/lib/products";
+import { COMPANY, formatVnd } from "@/lib/products";
 
 const STEPS = ["Giỏ hàng", "Thanh toán", "Xác nhận"];
 
 export default function CheckoutPage() {
-  const { lines, subtotal, clear, loaded } = useCart();
+  const { items, lines, subtotal, clear, loaded, resolving } = useCart();
   const router = useRouter();
   const [payment, setPayment] = useState("cod");
   const shipping = subtotal >= 2000000 || subtotal === 0 ? 0 : 45000;
@@ -40,7 +40,7 @@ export default function CheckoutPage() {
     router.push("/xac-nhan-dat-hang");
   };
 
-  if (loaded && lines.length === 0) {
+  if (loaded && !resolving && items.length === 0) {
     return (
       <Container className="max-w-[720px] py-16 text-center">
         <h1 className="mb-4 text-[30px]">Giỏ hàng đang trống</h1>
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
               {lines.map((item) => (
                 <div key={item.sku} className="flex items-center gap-3">
                   <div className="relative h-12 w-12 shrink-0 border border-kg-sage-500/25 bg-kg-moss-900/[0.04]">
-                    <Image src={productImage(item.img)} alt="" fill sizes="48px" className="object-contain" />
+                    {item.imageUrl && <Image src={item.imageUrl} alt="" fill sizes="48px" className="object-contain" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-[14px] text-kg-moss-900">{item.name}</div>

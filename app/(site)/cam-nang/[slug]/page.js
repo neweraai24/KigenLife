@@ -7,7 +7,7 @@ import ComplianceNotice from "@/components/ui/ComplianceNotice";
 import ShareRow from "@/components/ShareRow";
 import ProductCard from "@/components/commerce/ProductCard";
 import { ARTICLES, findArticle } from "@/lib/articles";
-import { findProduct } from "@/lib/products";
+import { getProductBySku } from "@/lib/sanity/queries";
 
 export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -25,7 +25,9 @@ export default async function ArticlePage({ params }) {
   const article = findArticle(slug);
   if (!article) notFound();
 
-  const mentioned = (article.mentionedSkus || []).map(findProduct).filter(Boolean);
+  const mentioned = (
+    await Promise.all((article.mentionedSkus || []).map(getProductBySku))
+  ).filter(Boolean);
   const related = ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   const toc = article.ingredients

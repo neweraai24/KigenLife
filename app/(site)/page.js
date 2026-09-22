@@ -8,19 +8,18 @@ import TickDivider from "@/components/ui/TickDivider";
 import SectionHead from "@/components/ui/SectionHead";
 import ComplianceNotice from "@/components/ui/ComplianceNotice";
 import ProductCard from "@/components/commerce/ProductCard";
-import { PRODUCTS, productImage } from "@/lib/products";
+import { productImage } from "@/lib/products";
+import { getAllProducts, getFeaturedProducts } from "@/lib/sanity/queries";
 
-const FEATURED_SKUS = ["GB227-110", "LDB100", "NSB114-GOLD", "NSM350"];
-const FACTS = [
+const FACTS_INTRO = [
   ["1976", "Trang trại tự vận hành tại Ontario, Canada"],
-  ["26", "Sản phẩm trong danh mục, có mã và khối lượng công bố"],
   ["100%", "Lô hàng nhập khẩu chính ngạch, có chứng nhận xuất xứ"],
 ];
 const CATEGORIES = [
-  { label: "Củ nguyên", id: "cu", img: "p02-GB49", count: "11 mã" },
-  { label: "Sâm lát", id: "lat", img: "p12-LDB100", count: "4 mã" },
-  { label: "Bột sâm", id: "bot", img: "p19-NSB114-GOLD", count: "4 mã" },
-  { label: "Chế biến", id: "che", img: "p23-NS-CO-400", count: "6 mã" },
+  { label: "Củ nguyên", id: "cu", img: "p02-GB49" },
+  { label: "Sâm lát", id: "lat", img: "p12-LDB100" },
+  { label: "Bột sâm", id: "bot", img: "p19-NSB114-GOLD" },
+  { label: "Chế biến", id: "che", img: "p23-NS-CO-400" },
 ];
 const CERTS = [
   { year: "2006", name: "Giải thưởng Doanh nhân Canada gốc Hoa" },
@@ -61,8 +60,17 @@ export const metadata = {
   title: "Trang chủ",
 };
 
-export default function HomePage() {
-  const featured = PRODUCTS.filter((p) => FEATURED_SKUS.includes(p.sku));
+export default async function HomePage() {
+  const [featured, allProducts] = await Promise.all([getFeaturedProducts(4), getAllProducts()]);
+  const countByLine = allProducts.reduce((acc, p) => {
+    acc[p.line] = (acc[p.line] || 0) + 1;
+    return acc;
+  }, {});
+  const FACTS = [
+    FACTS_INTRO[0],
+    [String(allProducts.length), "Sản phẩm trong danh mục, có mã và khối lượng công bố"],
+    FACTS_INTRO[1],
+  ];
 
   return (
     <>
@@ -131,23 +139,25 @@ export default function HomePage() {
               </div>
               <div className="flex items-baseline justify-between gap-3 p-5">
                 <span className="font-display text-[24px] font-semibold text-kg-moss-900">{c.label}</span>
-                <span className="font-mono text-[15px] text-kg-sage-500">{c.count}</span>
+                <span className="font-mono text-[15px] text-kg-sage-500">{countByLine[c.id] || 0} mã</span>
               </div>
             </Link>
           ))}
         </div>
       </Container>
 
-      <Container className="pt-14 md:pt-18">
-        <TickDivider withRule className="mb-10" />
-        <SectionHead eyebrow="ĐƯỢC CHỌN NHIỀU DỊP TẾT" title="Hộp quà biếu" />
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-          {featured.map((p) => (
-            <ProductCard key={p.sku} product={p} />
-          ))}
-        </div>
-        <ComplianceNotice className="mt-8" />
-      </Container>
+      {featured.length > 0 && (
+        <Container className="pt-14 md:pt-18">
+          <TickDivider withRule className="mb-10" />
+          <SectionHead eyebrow="ĐƯỢC CHỌN NHIỀU DỊP TẾT" title="Hộp quà biếu" />
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
+            {featured.map((p) => (
+              <ProductCard key={p.sku} product={p} />
+            ))}
+          </div>
+          <ComplianceNotice className="mt-8" />
+        </Container>
+      )}
 
       <section className="mt-18 bg-kg-moss-900 py-14 md:py-18">
         <Container>

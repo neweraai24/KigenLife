@@ -8,7 +8,7 @@ import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
 import ComplianceNotice from "@/components/ui/ComplianceNotice";
 import GinsengRing from "@/components/ui/GinsengRing";
-import { COMPANY, formatVnd, productImage } from "@/lib/products";
+import { COMPANY, formatVnd } from "@/lib/products";
 
 const TIMELINE = [
   { label: "Đã đặt", state: "done" },
@@ -91,7 +91,7 @@ export default function OrderConfirmationPage() {
             {order.lines.map((item) => (
               <div key={item.sku} className="flex items-center gap-4 py-2.5">
                 <div className="relative h-14 w-14 shrink-0 border border-kg-sage-500/20 bg-kg-white">
-                  <Image src={productImage(item.img)} alt="" fill sizes="56px" className="object-contain" />
+                  {item.imageUrl && <Image src={item.imageUrl} alt="" fill sizes="56px" className="object-contain" />}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-[15px] leading-[1.35] text-kg-moss-900">{item.name}</div>

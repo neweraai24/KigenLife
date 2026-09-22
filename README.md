@@ -11,6 +11,7 @@ Xây dựng lại từ bản thiết kế (Claude Design handoff) thành ứng d
 - [Tailwind CSS v4](https://tailwindcss.com/) (cấu hình theme qua `app/globals.css`)
 - [lucide-react](https://lucide.dev/) cho icon
 - Giỏ hàng lưu trong `localStorage` qua React Context (`lib/cart-context.js`)
+- [Sanity](https://sanity.io) — CMS quản lý sản phẩm/giá, Studio nhúng tại `/studio` (xem [HUONG-DAN-SANITY.md](HUONG-DAN-SANITY.md))
 
 ## Cấu trúc thư mục
 
@@ -36,10 +37,17 @@ components/
   commerce/                   # ProductCard, SpecTable, OriginTimeline, CatalogClient...
   layout/                     # Header, Footer
 lib/
-  products.js                 # Dữ liệu 25 sản phẩm (giá là placeholder)
+  products.js                 # Company info, dòng sản phẩm, SEED_PRODUCTS (dữ liệu mẫu)
   articles.js                  # Nội dung Cẩm nang
-  cart-context.js               # React Context cho giỏ hàng
-public/images/                 # Logo, ảnh sản phẩm, ảnh lifestyle
+  cart-context.js               # React Context cho giỏ hàng (lấy giá/tên từ /api/products)
+  sanity/                        # client, queries (GROQ), image url builder
+sanity/schemaTypes/              # Schema "product" cho Sanity Studio
+sanity.config.js                 # Cấu hình Sanity Studio
+app/studio/[[...tool]]/           # Studio nhúng vào website tại /studio
+app/api/products/                 # API nội bộ — cart đọc giá/tên sản phẩm hiện tại
+app/api/revalidate/                # Webhook Sanity — cập nhật tức thời khi Publish
+scripts/seed-sanity.mjs            # Nạp 25 sản phẩm mẫu vào Sanity (npm run seed)
+public/images/                 # Logo, ảnh lifestyle, ảnh sản phẩm mẫu (dùng khi seed)
 ```
 
 ## Bắt đầu
@@ -57,9 +65,13 @@ npm start       # chạy bản build
 npm run lint    # kiểm tra ESLint
 ```
 
+## Quản lý sản phẩm/giá không cần code
+
+Xem hướng dẫn đầy đủ ở [HUONG-DAN-SANITY.md](HUONG-DAN-SANITY.md): tạo project Sanity miễn phí, điền `.env.local`, chạy `npm run seed` để nạp 25 sản phẩm mẫu, sau đó vào `/studio` để tự thêm/sửa/xoá sản phẩm và đổi giá. Chưa cấu hình Sanity thì các trang vẫn chạy bình thường, chỉ hiển thị "0 sản phẩm" cho tới khi kết nối xong.
+
 ## Ghi chú
 
-- **Giá, mã lô, số chứng nhận trong `lib/products.js` là dữ liệu giữ chỗ** — cần thay bằng bảng giá và chứng từ thật trước khi vận hành thực tế.
+- **Giá, mã lô, số chứng nhận trong `lib/products.js` (SEED_PRODUCTS) là dữ liệu giữ chỗ** — cần thay bằng bảng giá và chứng từ thật trước khi vận hành thực tế.
 - Thiếu 1/26 SKU packshot theo bản thiết kế gốc (25 ảnh sản phẩm được cung cấp).
 - Câu bắt buộc theo quy định *"Thực phẩm này không phải là thuốc..."* hiển thị qua component `ComplianceNotice` trên mọi trang sản phẩm/danh mục.
 - Thanh toán trong dự án là mô phỏng phía client (chưa tích hợp cổng thanh toán/CRM thật).

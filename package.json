@@ -6,16 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node scripts/seed-sanity.mjs"
   },
   "dependencies": {
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^6.13.0",
+    "@sanity/webhook": "^4.0.4",
     "lucide-react": "^1.43.0",
     "next": "16.3.4",
+    "next-sanity": "^13.3.4",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "sanity": "^6.13.0"
   },
   "devDependencies": {
+    "@sanity/client": "^8.6.1",
     "@tailwindcss/postcss": "^4",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4"

@@ -8,6 +8,7 @@ import OriginTimeline from "@/components/commerce/OriginTimeline";
 import SpecTable from "@/components/commerce/SpecTable";
 import OriginContactForm from "@/components/OriginContactForm";
 import { COMPANY } from "@/lib/products";
+import { getAllProducts } from "@/lib/sanity/queries";
 
 export const metadata = {
   title: "Nguồn gốc",
@@ -22,7 +23,8 @@ const TIMELINE = [
   { year: "Hiện tại", title: "Kho Nha Trang", body: "Bảo quản dưới 25 °C. Hàng xuất theo lô, in mã lô trên phiếu giao.", tick: 6 },
 ];
 
-export default function OriginPage() {
+export default async function OriginPage() {
+  const products = await getAllProducts();
   return (
     <>
       <section className="bg-kg-moss-900 text-kg-ivory-50">
@@ -72,7 +74,7 @@ export default function OriginPage() {
       <Container className="pb-18">
         <TickDivider withRule className="mb-10" />
         <SectionHead eyebrow="LIÊN HỆ" title="Gửi câu hỏi cho KIGEN" lead="KIGEN gọi lại xác nhận trước khi giao hàng." />
-        <OriginContactForm />
+        <OriginContactForm products={products} />
       </Container>
     </>
   );

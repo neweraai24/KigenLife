@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
       lang="vi"
       className={`${cormorant.variable} ${beVietnam.variable} ${plexMono.variable}`}
     >
-      <body className="flex min-h-screen flex-col overflow-x-hidden bg-kg-ivory-50 font-body text-kg-moss-900">
+      <body className="bg-kg-ivory-50 font-body text-kg-moss-900 antialiased">
         <CartProvider>{children}</CartProvider>
       </body>
     </html>
