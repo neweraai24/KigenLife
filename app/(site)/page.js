@@ -18,7 +18,7 @@ const FACTS_INTRO = [
 const CATEGORIES = [
   { label: "Củ nguyên", id: "cu", img: "p02-GB49" },
   { label: "Sâm lát", id: "lat", img: "p12-LDB100" },
-  { label: "Bột sâm", id: "bot", img: "p19-NSB114-GOLD" },
+  { label: "Bột sâm", id: "bot", img: "p18-NSB114" },
   { label: "Chế biến", id: "che", img: "p23-NS-CO-400" },
 ];
 const CERTS = [
