@@ -54,7 +54,10 @@ export default function Footer() {
           <div className="mb-2.5 text-[14px] leading-[1.5] text-kg-ivory-50/75">{COMPANY.name}</div>
           <div className="mb-2.5 text-[14px] leading-[1.5] text-kg-ivory-50/75">{COMPANY.address}</div>
           <div className="mb-2.5 text-[14px] leading-[1.5] text-kg-ivory-50/75">Mã số doanh nghiệp: {COMPANY.taxId}</div>
-          <div className="mb-2.5 text-[14px] leading-[1.5] text-kg-ivory-50/75">Hotline: {COMPANY.hotlineDisplay}</div>
+          <div className="mb-2.5 text-[14px] leading-[1.5] text-kg-ivory-50/75">
+            Hotline: {COMPANY.hotlineDisplay} · {COMPANY.hotlineDisplay2}
+          </div>
+          <div className="mb-2.5 text-[14px] leading-[1.5] text-kg-ivory-50/75">Email: {COMPANY.email}</div>
         </div>
       </div>
       <div className="mx-auto mt-10 max-w-[1160px] border-t border-kg-gold-500/30 pt-6 text-center font-body text-[13px] text-kg-ivory-50/70">

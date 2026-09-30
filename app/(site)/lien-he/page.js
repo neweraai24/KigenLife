@@ -62,8 +62,11 @@ export default function ContactPage() {
         <div className="flex flex-col gap-5">
           <div>
             <div className="kg-eyebrow mb-2">Hotline</div>
-            <a href={`tel:${COMPANY.hotline}`} className="text-[30px] font-display font-semibold text-kg-moss-900 no-underline">
+            <a href={`tel:${COMPANY.hotline}`} className="block text-[30px] font-display font-semibold text-kg-moss-900 no-underline">
               {COMPANY.hotlineDisplay}
+            </a>
+            <a href={`tel:${COMPANY.hotline2}`} className="block text-[22px] font-display font-semibold text-kg-moss-900 no-underline">
+              {COMPANY.hotlineDisplay2}
             </a>
             <div className="mt-1 text-[15px] text-kg-sage-500">8h00 – 20h00, tất cả các ngày trong tuần</div>
           </div>
@@ -77,8 +80,8 @@ export default function ContactPage() {
           <TickDivider spacing={12} />
           <div>
             <div className="kg-eyebrow mb-2">Email</div>
-            <a href="mailto:hotro@kigenlife.vn" className="text-[17px] text-kg-moss-700">
-              hotro@kigenlife.vn
+            <a href={`mailto:${COMPANY.email}`} className="text-[17px] text-kg-moss-700">
+              {COMPANY.email}
             </a>
           </div>
           <TickDivider spacing={12} />
